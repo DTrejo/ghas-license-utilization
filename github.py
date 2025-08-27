@@ -75,6 +75,11 @@ def get_ghas_status_for_repos(org, token):
 
         data = response.json()
         for repo_data in data:
+            # Always skip archived repositories
+            archived = repo_data.get("archived", False)
+            if archived:
+                continue
+
             owner, name = repo_data["full_name"].split("/")
             ghas_status = (
                 repo_data.get("security_and_analysis", {})
@@ -84,7 +89,7 @@ def get_ghas_status_for_repos(org, token):
             )
             visibility = repo_data["visibility"]
             pushed_at = repo_data["pushed_at"]
-            repo = Repository(name, owner, ghas_status, visibility, pushed_at)
+            repo = Repository(name, owner, ghas_status, visibility, pushed_at, archived)
             repos.append(repo)
         if "next" not in response.links:
             break

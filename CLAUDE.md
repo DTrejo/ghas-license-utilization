@@ -67,14 +67,14 @@ The repository has GitHub Actions configured for:
 
 **github.py** - GitHub API Integration
 - `add_active_committers()`: Processes CSV reports or fetches via GraphQL API
-- `get_ghas_status_for_repos()`: Retrieves repository GHAS status via REST API
+- `get_ghas_status_for_repos()`: Retrieves repository GHAS status via REST API and automatically filters out archived repositories
 - `get_active_committers_in_last_90_days()`: GraphQL queries for commit history
 - `get_orgs_in_ent()`: Enterprise organization discovery
 - `handle_rate_limit()`: Intelligent rate limiting with exponential backoff
 - Uses ThreadPoolExecutor for concurrent API calls (MAX_WORKERS = 5)
 
 **models.py** - Data Models
-- `Repository`: Core data structure with GHAS status, visibility, active committers
+- `Repository`: Core data structure with GHAS status, visibility, archived status, and active committers
 - `Report`: Comprehensive report structure with calculated properties for coverage metrics
 
 **report.py** - Analysis Engine
@@ -103,7 +103,7 @@ The optimization algorithm uses a greedy approach to maximize repository coverag
 
 ### Data Flow
 
-1. **Discovery**: Fetch organizations → repositories → GHAS status
+1. **Discovery**: Fetch organizations → repositories → GHAS status (archived repositories automatically filtered out)
 2. **Committer Analysis**: Process CSV report or query GraphQL API for active committers (90-day window)
 3. **Categorization**: Group repositories by activation requirements
 4. **Optimization**: Find optimal combinations for available licenses

@@ -1,11 +1,19 @@
 class Repository:
     def __init__(
-        self, name, org, ghas_status, visibility, pushed_at, active_committers=None
+        self,
+        name,
+        org,
+        ghas_status,
+        visibility,
+        pushed_at,
+        archived=False,
+        active_committers=None,
     ):
         self.name = name
         self.org = org
         self.ghas_status = ghas_status
         self.pushed_at = pushed_at
+        self.archived = archived
         self.active_committers = (
             active_committers if active_committers is not None else []
         )
@@ -32,8 +40,11 @@ class Repository:
     def get_visibility(self):
         return self.visibility
 
+    def get_archived(self):
+        return self.archived
+
     def __str__(self):
-        return f"Repository: {self.name} | GHAS Status: {self.ghas_status} | Visibility: {self.visibility} | Last Pushed At: {self.pushed_at} | Active Committers: {self.active_committers}"
+        return f"Repository: {self.name} | GHAS Status: {self.ghas_status} | Visibility: {self.visibility} | Archived: {self.archived} | Last Pushed At: {self.pushed_at} | Active Committers: {self.active_committers}"
 
     def to_dict(self):
         return {
@@ -41,6 +52,7 @@ class Repository:
             "org": self.org,
             "ghas_status": self.ghas_status,
             "visibility": self.visibility,
+            "archived": self.archived,
             "pushed_at": self.pushed_at,
             "active_committers": self.active_committers,
         }
