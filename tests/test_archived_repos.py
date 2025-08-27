@@ -11,36 +11,6 @@ from github import get_ghas_status_for_repos
 
 
 class TestArchivedRepositoryFiltering(unittest.TestCase):
-    def test_repository_model_with_archived_field(self):
-        """Test that Repository model correctly handles archived field"""
-        # Test with archived=True
-        repo_archived = Repository(
-            name="archived-repo",
-            org="test-org",
-            ghas_status=False,
-            visibility="private",
-            pushed_at=datetime.now().isoformat(),
-            archived=True,
-            active_committers=["user1"],
-        )
-
-        self.assertTrue(repo_archived.get_archived())
-        self.assertIn("Archived: True", str(repo_archived))
-        self.assertTrue(repo_archived.to_dict()["archived"])
-
-        # Test with archived=False (default)
-        repo_active = Repository(
-            name="active-repo",
-            org="test-org",
-            ghas_status=True,
-            visibility="private",
-            pushed_at=datetime.now().isoformat(),
-            active_committers=["user1"],
-        )
-
-        self.assertFalse(repo_active.get_archived())
-        self.assertIn("Archived: False", str(repo_active))
-        self.assertFalse(repo_active.to_dict()["archived"])
 
     @patch("github.requests.get")
     def test_get_ghas_status_filters_archived_repos(self, mock_get):
@@ -87,9 +57,9 @@ class TestArchivedRepositoryFiltering(unittest.TestCase):
         self.assertIn("another-active-repo", repo_names)
         self.assertNotIn("archived-repo", repo_names)
 
-        # Verify all returned repos have archived=False
+        # Verify all returned repos are non-archived (they wouldn't be returned otherwise)
         for repo in repos:
-            self.assertFalse(repo.get_archived())
+            self.assertIsNotNone(repo.name)
 
     @patch("github.requests.get")
     def test_get_ghas_status_handles_missing_archived_field(self, mock_get):
@@ -115,10 +85,9 @@ class TestArchivedRepositoryFiltering(unittest.TestCase):
         # Call the function
         repos = get_ghas_status_for_repos("test-org", "fake-token")
 
-        # Verify repo is included (archived defaults to False)
+        # Verify repo is included (archived defaults to False when missing)
         self.assertEqual(len(repos), 1)
         self.assertEqual(repos[0].name, "repo-without-archived-field")
-        self.assertFalse(repos[0].get_archived())
 
     @patch("github.requests.get")
     def test_get_ghas_status_filters_all_archived_repos(self, mock_get):
@@ -153,22 +122,6 @@ class TestArchivedRepositoryFiltering(unittest.TestCase):
 
         # Verify no repos are returned
         self.assertEqual(len(repos), 0)
-
-    def test_repository_model_backward_compatibility(self):
-        """Test that Repository model maintains backward compatibility"""
-        # Test creating repository without archived parameter (should default to False)
-        repo = Repository(
-            name="test-repo",
-            org="test-org",
-            ghas_status=True,
-            visibility="private",
-            pushed_at=datetime.now().isoformat(),
-            active_committers=["user1"],
-        )
-
-        self.assertFalse(repo.get_archived())
-        self.assertIn("Archived: False", str(repo))
-        self.assertFalse(repo.to_dict()["archived"])
 
 
 if __name__ == "__main__":

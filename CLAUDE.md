@@ -74,7 +74,7 @@ The repository has GitHub Actions configured for:
 - Uses ThreadPoolExecutor for concurrent API calls (MAX_WORKERS = 5)
 
 **models.py** - Data Models
-- `Repository`: Core data structure with GHAS status, visibility, archived status, and active committers
+- `Repository`: Core data structure with GHAS status, visibility, and active committers
 - `Report`: Comprehensive report structure with calculated properties for coverage metrics
 
 **report.py** - Analysis Engine

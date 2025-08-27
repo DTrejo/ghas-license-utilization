@@ -89,7 +89,7 @@ def get_ghas_status_for_repos(org, token):
             )
             visibility = repo_data["visibility"]
             pushed_at = repo_data["pushed_at"]
-            repo = Repository(name, owner, ghas_status, visibility, pushed_at, archived)
+            repo = Repository(name, owner, ghas_status, visibility, pushed_at)
             repos.append(repo)
         if "next" not in response.links:
             break
